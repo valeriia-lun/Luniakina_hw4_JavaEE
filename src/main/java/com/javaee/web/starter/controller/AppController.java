@@ -1,4 +1,4 @@
-package com.javaee.web.starter.service;
+package com.javaee.web.starter.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
