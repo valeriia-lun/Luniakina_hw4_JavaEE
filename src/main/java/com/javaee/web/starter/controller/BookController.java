@@ -1,35 +1,44 @@
 package com.javaee.web.starter.controller;
 
 import com.javaee.web.starter.model.Book;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
+import com.javaee.web.starter.service.BookService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
 import java.util.List;
 
-@Controller
+@RestController
+@RequiredArgsConstructor
 @RequestMapping("/books")
 public class BookController {
-  List<Book> books = new ArrayList<>();
 
-  @GetMapping("/index")
-  public String getBooksPage() {
-    return "books-form-page";
+  private final BookService booksService;
+
+  @RequestMapping(method = RequestMethod.POST)
+  public ResponseEntity<List<Book>> saveBook(@RequestBody final Book book) {
+    booksService.saveBook(book);
+
+    return ResponseEntity
+        .status(HttpStatus.OK)
+        .body(booksService.getAllBooks());
   }
 
-  @PostMapping()
-  public String createBook(@ModelAttribute Book book) {
-    books.add(book);
-    return "redirect:/books";
+  @RequestMapping(value = "/filter", method = RequestMethod.POST)
+  public ResponseEntity<List<Book>> findBooks(@RequestBody final Book book) {
+    return ResponseEntity
+        .status(HttpStatus.OK)
+        .body(booksService.getBooksByNameAndIsbn(book.getName(), book.getISBN()));
   }
 
-  @GetMapping()
-  public String getBooks(Model model) {
-    model.addAttribute("books", books);
-    return "books";
+  @RequestMapping(method = RequestMethod.GET)
+  public ResponseEntity<List<Book>> getAll() {
+    return ResponseEntity
+        .status(HttpStatus.OK)
+        .body(booksService.getAllBooks());
   }
 }
